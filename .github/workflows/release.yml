@@ -24,7 +24,21 @@ jobs:
         run: test "$(uname -m)" = '${{ matrix.arch }}'
       - name: Test core
         working-directory: 产品
-        run: swift test --filter AccountCoreTests
+        run: |
+          set -o pipefail
+          swift test --filter AccountCoreTests 2>&1 | tee "$RUNNER_TEMP/core-tests.log"
+      - name: Surface test errors
+        if: failure()
+        run: |
+          python3 - <<'PYTHON'
+          import os, pathlib
+          p = pathlib.Path(os.environ['RUNNER_TEMP']) / 'core-tests.log'
+          if p.exists():
+              lines = p.read_text().splitlines()
+              errors = [s for s in lines if 'error:' in s or 'failed' in s or 'Error' in s]
+              for line in (errors or lines[-15:])[-18:]:
+                  print('::error::' + line.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A'))
+          PYTHON
       - name: Build and package
         run: zsh 产品/scripts/package-release.sh '${{ matrix.arch }}'
       - name: Smoke-test app resources without accounts
