@@ -58,9 +58,20 @@ jobs:
           PYTHON
       - name: Smoke-test app resources without accounts
         run: |
+          set -o pipefail
           mkdir -p "$RUNNER_TEMP/preview"
-          '产品/dist/${{ matrix.arch }}/Codex Accounts.app/Contents/MacOS/CodexAccounts' --render-previews "$RUNNER_TEMP/preview"
+          '产品/dist/${{ matrix.arch }}/Codex Accounts.app/Contents/MacOS/CodexAccounts' --render-previews "$RUNNER_TEMP/preview" 2>&1 | tee "$RUNNER_TEMP/preview.log"
           test -s "$RUNNER_TEMP/preview/accounts.png"
+      - name: Surface preview errors
+        if: failure()
+        run: |
+          python3 - <<'PYTHON'
+          import os, pathlib
+          p = pathlib.Path(os.environ['RUNNER_TEMP']) / 'preview.log'
+          if p.exists():
+              for line in p.read_text().splitlines()[:35]:
+                  print('::error::' + line.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A'))
+          PYTHON
       - uses: actions/upload-artifact@v4
         with:
           name: mac-${{ matrix.arch }}
