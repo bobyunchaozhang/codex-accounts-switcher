@@ -40,7 +40,19 @@ jobs:
                   print('::error::' + line.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A'))
           PYTHON
       - name: Build and package
-        run: zsh 产品/scripts/package-release.sh '${{ matrix.arch }}'
+        run: |
+          set -o pipefail
+          zsh 产品/scripts/package-release.sh '${{ matrix.arch }}' 2>&1 | tee "$RUNNER_TEMP/package.log"
+      - name: Surface packaging errors
+        if: failure()
+        run: |
+          python3 - <<'PYTHON'
+          import os, pathlib
+          p = pathlib.Path(os.environ['RUNNER_TEMP']) / 'package.log'
+          if p.exists():
+              for line in p.read_text().splitlines()[-24:]:
+                  print('::error::' + line.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A'))
+          PYTHON
       - name: Smoke-test app resources without accounts
         run: |
           mkdir -p "$RUNNER_TEMP/preview"
