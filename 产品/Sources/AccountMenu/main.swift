@@ -53,6 +53,21 @@ if CommandLine.arguments.contains("--check-current-readonly") { exit(Probe.run()
 if CommandLine.arguments.contains("--check-project-view-readonly") { exit(Probe.projectViewReadOnly()) }
 MainActor.assumeIsolated {
     let app = NSApplication.shared
+    if CommandLine.arguments.contains("--check-ui-readonly") {
+        for name in ["ChakraPetch-BoldItalic", "ChakraPetch-Bold"] {
+            guard let font = Bundle.module.url(forResource: name, withExtension: "ttf") else { print("missing_font_resource"); exit(1) }
+            CTFontManagerRegisterFontsForURL(font as CFURL, .process, nil)
+        }
+        let model = MenuModel(demo: true)
+        for screen in [MenuModel.Screen.accounts, .add, .manage] {
+            model.screen = screen
+            let view = NSHostingView(rootView: Panel(model: model, snapshot: true))
+            guard view.fittingSize.width > 0, view.fittingSize.height > 0 else { print("invalid_layout"); exit(1) }
+        }
+        guard NSFont(name: "ChakraPetch-Bold", size: 14) != nil, AccountBoxIcon.image().size.width > 0 else { print("invalid_resources"); exit(1) }
+        print("mock_ui_layout=passed resources=passed account_access=none network=none")
+        exit(0)
+    }
     if let i = CommandLine.arguments.firstIndex(of: "--render-previews"), CommandLine.arguments.indices.contains(i + 1) {
         for name in ["ChakraPetch-BoldItalic", "ChakraPetch-Bold"] { if let font = Bundle.module.url(forResource: name, withExtension: "ttf") { CTFontManagerRegisterFontsForURL(font as CFURL, .process, nil) } }
         let folder = URL(fileURLWithPath: CommandLine.arguments[i + 1])

@@ -60,8 +60,13 @@ jobs:
         run: |
           set -o pipefail
           mkdir -p "$RUNNER_TEMP/preview"
-          '产品/dist/${{ matrix.arch }}/Codex Accounts.app/Contents/MacOS/CodexAccounts' --render-previews "$RUNNER_TEMP/preview" 2>&1 | tee "$RUNNER_TEMP/preview.log"
-          test -s "$RUNNER_TEMP/preview/accounts.png"
+          '产品/dist/${{ matrix.arch }}/Codex Accounts.app/Contents/MacOS/CodexAccounts' --check-ui-readonly 2>&1 | tee "$RUNNER_TEMP/preview.log"
+          # Intel hosted VMs cannot rasterize SwiftUI via Metal. Validate layout
+          # and resources above on both architectures; rasterize on arm64 only.
+          if [ '${{ matrix.arch }}' = arm64 ]; then
+            '产品/dist/${{ matrix.arch }}/Codex Accounts.app/Contents/MacOS/CodexAccounts' --render-previews "$RUNNER_TEMP/preview" 2>&1 | tee -a "$RUNNER_TEMP/preview.log"
+            test -s "$RUNNER_TEMP/preview/accounts.png"
+          fi
       - name: Surface preview errors
         if: failure()
         run: |

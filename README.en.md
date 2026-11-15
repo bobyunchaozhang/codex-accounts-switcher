@@ -46,7 +46,7 @@ Settings also provides re-login and removal. Removal deletes only the tool's sav
 | Switcher 0.1.15 | 84 core tests and 2 isolated application lifecycle tests with fixture credentials; a real online Codex account roundtrip and continuation on this release still await acceptance testing |
 | Codex 26.1103.41825 | Earlier limited Apple Silicon tests covered project visibility, continuing existing chats across accounts, and project creation/renaming/deletion. Later versions exposed exit and storage compatibility issues; those tests are not a permanent compatibility guarantee |
 | Apple Silicon | Build, execution and local checks on an M4 Pro development Mac |
-| Intel | Native x86_64 download; release CI builds, tests and renders a mock UI on an Intel runner. Real Codex switching has not been accepted on a physical Intel Mac |
+| Intel | Native x86_64 download; release CI builds, tests and checks mock UI initialization, layout and resources on an Intel runner. Intel hosted VMs lack a usable Metal device, so GPU rendering is not accepted there. Real Codex switching has not been accepted on a physical Intel Mac |
 
 Adapters recognize legacy account snapshots and the newer shared catalogs. Unknown or conflicting formats stop before credential writes. Codex internal formats and protocols can change. “Latest inspected” describes our evidence, not the latest official Codex release.
 
