@@ -103,10 +103,18 @@ struct AccountRow: Identifiable {
             let tokens: [String: String] = ["id_token": id, "access_token": id, "refresh_token": "fake", "account_id": email]
             let credentialData = try! JSONSerialization.data(withJSONObject: ["tokens": tokens])
             let c = try! Credential(credentialData)
-            let data = """
-            {"accountId":"\(email)","rateLimits":{"primary":{"usedPercent":\(used),"windowDurationMins":\(plan == "plus" ? 300 : 10080),"resetsAt":\(Int(Date().timeIntervalSince1970) + (plan == "plus" ? 3 * 3600 + 12 * 60 : 2 * 86400 + 3 * 3600 + 12 * 60))}},"rateLimitResetCredits":{"availableCount":2,"credits":[{"id":"demo1","status":"available","resetType":"codexRateLimits","expiresAt":\(Int(Date().timeIntervalSince1970) + 23 * 86400 + 5 * 3600 + 30 * 60)},{"id":"demo2","status":"available","resetType":"codexRateLimits","expiresAt":\(Int(Date().timeIntervalSince1970) + 25 * 86400)}]}}
-            """
-            rows.append(AccountRow(profile: Profile(identity: c.identity), usage: try! JSONDecoder().decode(Usage.self, from: Data(data.utf8)), updated: Date()))
+            let now = Int(Date().timeIntervalSince1970)
+            let window = plan == "plus" ? 300 : 10080
+            let resetDelay = plan == "plus" ? 3 * 3600 + 12 * 60 : 2 * 86400 + 3 * 3600 + 12 * 60
+            let primary: [String: Any] = ["usedPercent": used, "windowDurationMins": window, "resetsAt": now + resetDelay]
+            let credits: [[String: Any]] = [
+                ["id": "demo1", "status": "available", "resetType": "codexRateLimits", "expiresAt": now + 23 * 86400 + 5 * 3600 + 30 * 60],
+                ["id": "demo2", "status": "available", "resetType": "codexRateLimits", "expiresAt": now + 25 * 86400]
+            ]
+            let sample: [String: Any] = ["accountId": email, "rateLimits": ["primary": primary],
+                "rateLimitResetCredits": ["availableCount": 2, "credits": credits]]
+            let data = try! JSONSerialization.data(withJSONObject: sample)
+            rows.append(AccountRow(profile: Profile(identity: c.identity), usage: try! JSONDecoder().decode(Usage.self, from: data), updated: Date()))
         }
         activeKey = rows.first?.id
     }
