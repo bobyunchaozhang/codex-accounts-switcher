@@ -100,7 +100,9 @@ struct AccountRow: Identifiable {
                 return "demo." + d.base64EncodedString().replacingOccurrences(of: "+", with: "-").replacingOccurrences(of: "/", with: "_").replacingOccurrences(of: "=", with: "") + ".demo"
             }
             let id = jwt(["sub": email, "email": email, "https://api.openai.com/auth": ["chatgpt_plan_type": plan]])
-            let c = try! Credential(JSONSerialization.data(withJSONObject: ["tokens": ["id_token": id, "access_token": id, "refresh_token": "fake", "account_id": email]]))
+            let tokens: [String: String] = ["id_token": id, "access_token": id, "refresh_token": "fake", "account_id": email]
+            let credentialData = try! JSONSerialization.data(withJSONObject: ["tokens": tokens])
+            let c = try! Credential(credentialData)
             let data = """
             {"accountId":"\(email)","rateLimits":{"primary":{"usedPercent":\(used),"windowDurationMins":\(plan == "plus" ? 300 : 10080),"resetsAt":\(Int(Date().timeIntervalSince1970) + (plan == "plus" ? 3 * 3600 + 12 * 60 : 2 * 86400 + 3 * 3600 + 12 * 60))}},"rateLimitResetCredits":{"availableCount":2,"credits":[{"id":"demo1","status":"available","resetType":"codexRateLimits","expiresAt":\(Int(Date().timeIntervalSince1970) + 23 * 86400 + 5 * 3600 + 30 * 60)},{"id":"demo2","status":"available","resetType":"codexRateLimits","expiresAt":\(Int(Date().timeIntervalSince1970) + 25 * 86400)}]}}
             """
