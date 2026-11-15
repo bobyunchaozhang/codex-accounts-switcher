@@ -36,5 +36,5 @@ PLIST
 cp ../LICENSE ../THIRD_PARTY_NOTICES.md "$app/Contents/Resources/"
 codesign --force --sign - "$app"
 codesign --verify --strict "$app"
-xcrun lipo -verify_arch "$architecture" "$app/Contents/MacOS/CodexAccounts"
+xcrun lipo "$app/Contents/MacOS/CodexAccounts" -verify_arch "$architecture"
 print "$app"
