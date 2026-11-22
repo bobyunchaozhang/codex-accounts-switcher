@@ -8,12 +8,12 @@
 
 ## 下载
 
-当前版本：**0.1.15（构建 16）**，要求 **macOS 14 或更新版本**，并安装 Codex 桌面应用。
+当前版本：**0.1.16（构建 17）**，要求 **macOS 14 或更新版本**，并安装 Codex 桌面应用。
 
 | Mac 类型 | 下载 |
 | --- | --- |
-| Apple Silicon（M1、M2、M3、M4 等 M 系列芯片） | [下载 arm64 版](https://github.com/bobyunchaozhang/codex-accounts-switcher/releases/latest/download/Codex-Accounts-0.1.15-arm64.zip) |
-| Intel | [下载 x86_64 版](https://github.com/bobyunchaozhang/codex-accounts-switcher/releases/latest/download/Codex-Accounts-0.1.15-x86_64.zip) |
+| Apple Silicon（M1、M2、M3、M4 等 M 系列芯片） | [下载 arm64 版](https://github.com/bobyunchaozhang/codex-accounts-switcher/releases/latest/download/Codex-Accounts-0.1.16-arm64.zip) |
+| Intel | [下载 x86_64 版](https://github.com/bobyunchaozhang/codex-accounts-switcher/releases/latest/download/Codex-Accounts-0.1.16-x86_64.zip) |
 
 也可以在 [Releases](https://github.com/bobyunchaozhang/codex-accounts-switcher/releases) 查看版本说明与 SHA-256 校验文件。在苹果菜单 →「关于本机」查看芯片类型。
 
@@ -43,7 +43,7 @@
 | 范围 | 已完成的验证 |
 | --- | --- |
 | Codex 26.1106.51428 | 安装包迁移代码核查、真实本地状态只读预演；适配公共项目／聊天清单与新版身份字段 |
-| 本工具 0.1.15 | 84 项核心测试、2 项独立测试应用的真实关闭／重开与虚构账号往返；最新真实 Codex 在线往返与续聊尚待验收 |
+| 本工具 0.1.16 | 84 项核心测试、2 项独立测试应用的真实关闭／重开与虚构账号往返；最新真实 Codex 在线往返与续聊尚待验收 |
 | Codex 26.1103.41825 | 早期 Apple Silicon 本机项目显示、跨账号原聊天续聊及项目新增／改名／删除的有限样本通过；后续版本发生过退出及结构兼容缺陷，不能视为长期保证 |
 | Apple Silicon | M4 Pro 开发机完成构建、运行及上述本机检查 |
 | Intel | 提供原生 x86_64 包，发布流水线在 Intel runner 构建、测试并检查模拟界面初始化／布局与资源；云端虚拟机缺少可用 Metal 设备，未做 Intel 图形渲染验收；尚未在实体 Intel Mac 上验收真实 Codex 切换 |

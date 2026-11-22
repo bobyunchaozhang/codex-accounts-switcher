@@ -1,28 +1,23 @@
-## 未发布 / Unreleased
+## 中文
 
-- 修复 SwiftPM 资源包在已安装应用中的定位，避免启动时找不到字体或图标。
+Codex Accounts 0.1.16（构建 17），macOS 14+，需安装 Codex 桌面应用。
+
+- 修复已安装应用中 SwiftPM 资源包的定位，避免启动时找不到字体或图标。
 - 弹窗打开前按内容计算尺寸，并随内容更新高度，修复面板与菜单栏图标距离过大的问题。
-- 应用与菜单栏改用 Streamline 的彩色 Like 图标，补齐应用 ICNS、署名、CC BY 4.0 许可全文、修改说明和图标生成脚本。
-- Resolve bundled SwiftPM resources from the installed app before falling back to package resources.
+- 应用和菜单栏改用 Streamline 的彩色 Like 图标。安装包包含署名、CC BY 4.0 许可全文及修改说明；仓库提供原始 SVG 和固定版本的图标生成脚本。
+- Apple Silicon 下载 `Codex-Accounts-0.1.16-arm64.zip`；Intel 下载 `Codex-Accounts-0.1.16-x86_64.zip`。每个包均附 SHA-256 校验文件。
+- 解压后用新应用替换「应用程序」中的旧版本。ZIP 采用 ad-hoc 签名，未经过 Apple 公证；首次打开若被拦截，按 README 中的系统设置步骤允许打开。
+- 最新实验核查的 Codex 仍为 26.1106.51428（26605）；本次不新增真实在线换号或实体 Intel Mac 验收结论。
+
+## English
+
+Codex Accounts 0.1.16 (build 17), macOS 14+. Requires the Codex desktop app.
+
+- Resolve SwiftPM resource bundles from the installed app, preventing missing-font or missing-icon startup failures.
 - Size the popover before presentation and track its preferred content size to address the gap below the menu bar.
-- Add the Streamline Like application/menu bar icons, attribution, full CC BY 4.0 license, modification notes, and reproducible icon generation.
+- Use the Streamline color Like icon for the app and menu bar. Packages include attribution, the full CC BY 4.0 license and modification notes. The repository includes the original SVG and a pinned icon-generation toolchain.
+- Download `Codex-Accounts-0.1.16-arm64.zip` for Apple Silicon or `Codex-Accounts-0.1.16-x86_64.zip` for Intel. Each archive has a SHA-256 checksum file.
+- Extract and replace the old app in Applications. Packages are ad-hoc signed, not Apple-notarized; see README.en.md for first-launch instructions.
+- The latest experimentally inspected Codex remains 26.1106.51428 (26605). This release adds no new real online account-switching or physical Intel Mac acceptance results.
 
-## 0.1.15 — 中文
-
-Codex Accounts 0.1.15（构建 16），macOS 14+。
-
-- Apple Silicon 下载 `arm64.zip`；Intel 下载 `x86_64.zip`。
-- 适配 Codex 26.1106 的公共项目／聊天清单及新身份字段，保留旧快照适配。
-- 修复旧交接记录误阻断及额度查询失败导致当前标记消失的问题。
-- 最近实验核查 Codex：26.1106.51428（26605）。84 项核心及 2 项隔离生命周期测试通过；该版真实在线往返仍待验收，实体 Intel Mac 的真实切换未验收。
-- ZIP 采用 ad-hoc 签名，未经过 Apple 公证；每个包附 SHA-256 文件。安装与限制见默认中文 README。
-
-## 0.1.15 — English
-
-Codex Accounts 0.1.15 (build 16), macOS 14+.
-
-- Download `arm64.zip` for Apple Silicon or `x86_64.zip` for Intel.
-- Supports Codex 26.1106 shared project/chat catalogs and identity markers, retaining the legacy adapter.
-- Fixes stale-checkpoint blocking and current-marker loss after usage-query failures.
-- Latest experimentally inspected Codex: 26.1106.51428 (26605). 84 core and 2 isolated lifecycle tests passed; real online acceptance on this version and real switching on physical Intel hardware remain pending.
-- Ad-hoc signed, not Apple-notarized. Each package has a SHA-256 file. See README.en.md for installation and limits.
+Icon attribution and license: [Third-party notices](https://github.com/bobyunchaozhang/codex-accounts-switcher/blob/v0.1.16/THIRD_PARTY_NOTICES.md).

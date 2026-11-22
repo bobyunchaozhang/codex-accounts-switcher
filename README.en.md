@@ -8,12 +8,12 @@ A compact native macOS menu bar app for manually switching Codex accounts, check
 
 ## Download
 
-Current version: **0.1.15 (build 16)**. Requires **macOS 14 or later** and the Codex desktop app.
+Current version: **0.1.16 (build 17)**. Requires **macOS 14 or later** and the Codex desktop app.
 
 | Mac | Download |
 | --- | --- |
-| Apple Silicon (M1, M2, M3, M4 and other M-series chips) | [Download arm64](https://github.com/bobyunchaozhang/codex-accounts-switcher/releases/latest/download/Codex-Accounts-0.1.15-arm64.zip) |
-| Intel | [Download x86_64](https://github.com/bobyunchaozhang/codex-accounts-switcher/releases/latest/download/Codex-Accounts-0.1.15-x86_64.zip) |
+| Apple Silicon (M1, M2, M3, M4 and other M-series chips) | [Download arm64](https://github.com/bobyunchaozhang/codex-accounts-switcher/releases/latest/download/Codex-Accounts-0.1.16-arm64.zip) |
+| Intel | [Download x86_64](https://github.com/bobyunchaozhang/codex-accounts-switcher/releases/latest/download/Codex-Accounts-0.1.16-x86_64.zip) |
 
 See [Releases](https://github.com/bobyunchaozhang/codex-accounts-switcher/releases) for notes and SHA-256 checksums. Check your chip under Apple menu → About This Mac.
 
@@ -43,7 +43,7 @@ Settings also provides re-login and removal. Removal deletes only the tool's sav
 | Scope | Evidence |
 | --- | --- |
 | Codex 26.1106.51428 | Inspected bundled migration code and performed a read-only dry run against real local state; supports its public project/chat catalogs and new identity field |
-| Switcher 0.1.15 | 84 core tests and 2 isolated application lifecycle tests with fixture credentials; a real online Codex account roundtrip and continuation on this release still await acceptance testing |
+| Switcher 0.1.16 | 84 core tests and 2 isolated application lifecycle tests with fixture credentials; a real online Codex account roundtrip and continuation on this release still await acceptance testing |
 | Codex 26.1103.41825 | Earlier limited Apple Silicon tests covered project visibility, continuing existing chats across accounts, and project creation/renaming/deletion. Later versions exposed exit and storage compatibility issues; those tests are not a permanent compatibility guarantee |
 | Apple Silicon | Build, execution and local checks on an M4 Pro development Mac |
 | Intel | Native x86_64 download; release CI builds, tests and checks mock UI initialization, layout and resources on an Intel runner. Intel hosted VMs lack a usable Metal device, so GPU rendering is not accepted there. Real Codex switching has not been accepted on a physical Intel Mac |
