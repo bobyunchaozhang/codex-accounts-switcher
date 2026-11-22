@@ -83,4 +83,4 @@ Apps are written to `产品/dist/<architecture>/Codex Accounts.app`. ZIPs and ch
 
 Open an [issue](https://github.com/bobyunchaozhang/codex-accounts-switcher/issues) with the switcher version, Codex version, Mac chip, steps and exact error. Redact emails, chat content and tokens first.
 
-Source code is under the [MIT License](LICENSE). Font and icon licenses are listed in [Third-party notices](THIRD_PARTY_NOTICES.md). This is an independent project and is not affiliated with OpenAI.
+Source code is under the [MIT License](LICENSE). The application and menu bar Like icon is by [Streamline](https://github.com/webalys-hq/streamline-vectors), licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Icon modifications, attribution and font licenses are listed in [Third-party notices](THIRD_PARTY_NOTICES.md). This is an independent project and is not affiliated with OpenAI or Streamline.

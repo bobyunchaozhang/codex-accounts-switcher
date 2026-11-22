@@ -19,6 +19,7 @@ release-assets/
 *.dmg
 *.zip
 *.dSYM/
+node_modules/
 
 # Credentials, local account data and recovery material
 .env

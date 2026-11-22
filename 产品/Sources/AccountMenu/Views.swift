@@ -24,6 +24,7 @@ struct Panel: View {
     @State private var removing: Profile?
     var body: some View {
         TimelineView(.periodic(from: .now, by: 60)) { context in content(now: context.date) }
+            .fixedSize(horizontal: false, vertical: true)
     }
     private func content(now: Date) -> some View {
         VStack(spacing: 8) {

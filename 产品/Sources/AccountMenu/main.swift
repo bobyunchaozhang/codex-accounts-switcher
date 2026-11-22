@@ -2,13 +2,24 @@ import AppKit
 import SwiftUI
 import CoreText
 
+extension Bundle {
+    static var accountMenuResources: Bundle {
+        if let url = Bundle.main.resourceURL?.appendingPathComponent("CodexAccounts_AccountMenu.bundle"),
+           let bundle = Bundle(url: url) {
+            return bundle
+        }
+        return .module
+    }
+}
+
 @MainActor final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     private var item: NSStatusItem!
     private var popover: NSPopover!
+    private var popoverHost: NSHostingController<Panel>!
     private var model: MenuModel!
     private var window: NSWindow?
     func applicationDidFinishLaunching(_ notification: Notification) {
-        for name in ["ChakraPetch-BoldItalic", "ChakraPetch-Bold"] { if let font = Bundle.module.url(forResource: name, withExtension: "ttf") { CTFontManagerRegisterFontsForURL(font as CFURL, .process, nil) } }
+        for name in ["ChakraPetch-BoldItalic", "ChakraPetch-Bold"] { if let font = Bundle.accountMenuResources.url(forResource: name, withExtension: "ttf") { CTFontManagerRegisterFontsForURL(font as CFURL, .process, nil) } }
         let demo = (CommandLine.arguments.contains("--demo") || CommandLine.arguments.contains("--demo-menu"))
         model = MenuModel(demo: demo)
         let panel = Panel(model: model)
@@ -24,14 +35,23 @@ import CoreText
         item.button?.image = AccountBoxIcon.image()
         item.button?.target = self; item.button?.action = #selector(toggle)
         popover = NSPopover(); popover.behavior = .transient; popover.delegate = self
-        popover.contentViewController = NSHostingController(rootView: panel)
+        popoverHost = NSHostingController(rootView: panel)
+        popoverHost.sizingOptions = [.preferredContentSize]
+        popover.contentViewController = popoverHost
     }
     func popoverDidClose(_ notification: Notification) {
         NotificationCenter.default.post(name: Notification.Name("AccountMenuPopoverClosed"), object: nil)
     }
     @objc private func toggle() {
         if popover.isShown { popover.performClose(nil) }
-        else if let button = item.button { popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY); model.refresh() }
+        else if let button = item.button {
+            // Resolve the compact panel size before AppKit positions the popover.
+            // Resizing after presentation can leave its arrow below the status item.
+            popoverHost.view.layoutSubtreeIfNeeded()
+            popover.contentSize = popoverHost.sizeThatFits(in: NSSize(width: 360, height: CGFloat.greatestFiniteMagnitude))
+            popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
+            model.refresh()
+        }
     }
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
         model?.busy == true ? .terminateCancel : .terminateNow
@@ -55,7 +75,7 @@ MainActor.assumeIsolated {
     let app = NSApplication.shared
     if CommandLine.arguments.contains("--check-ui-readonly") {
         for name in ["ChakraPetch-BoldItalic", "ChakraPetch-Bold"] {
-            guard let font = Bundle.module.url(forResource: name, withExtension: "ttf") else { print("missing_font_resource"); exit(1) }
+            guard let font = Bundle.accountMenuResources.url(forResource: name, withExtension: "ttf") else { print("missing_font_resource"); exit(1) }
             CTFontManagerRegisterFontsForURL(font as CFURL, .process, nil)
         }
         let model = MenuModel(demo: true)
@@ -69,7 +89,7 @@ MainActor.assumeIsolated {
         exit(0)
     }
     if let i = CommandLine.arguments.firstIndex(of: "--render-previews"), CommandLine.arguments.indices.contains(i + 1) {
-        for name in ["ChakraPetch-BoldItalic", "ChakraPetch-Bold"] { if let font = Bundle.module.url(forResource: name, withExtension: "ttf") { CTFontManagerRegisterFontsForURL(font as CFURL, .process, nil) } }
+        for name in ["ChakraPetch-BoldItalic", "ChakraPetch-Bold"] { if let font = Bundle.accountMenuResources.url(forResource: name, withExtension: "ttf") { CTFontManagerRegisterFontsForURL(font as CFURL, .process, nil) } }
         let folder = URL(fileURLWithPath: CommandLine.arguments[i + 1])
         try! FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
         let model = MenuModel(demo: true)

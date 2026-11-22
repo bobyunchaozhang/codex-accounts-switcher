@@ -83,4 +83,4 @@ zsh scripts/test-desktop-lifecycle.sh
 
 请在 [Issues](https://github.com/bobyunchaozhang/codex-accounts-switcher/issues) 提供工具版本、Codex 版本、Mac 芯片、操作顺序和错误原文；请先遮盖邮箱、聊天内容与任何令牌。
 
-源码采用 [MIT License](LICENSE)，字体与图标许可见 [第三方声明](THIRD_PARTY_NOTICES.md)。本项目为独立工具，与 OpenAI 无隶属关系。
+源码采用 [MIT License](LICENSE)。应用与菜单栏的 Like 图标来自 [Streamline](https://github.com/webalys-hq/streamline-vectors)，采用 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)；图标修改、署名及字体许可见 [第三方声明](THIRD_PARTY_NOTICES.md)。本项目为独立工具，与 OpenAI 或 Streamline 无隶属关系。

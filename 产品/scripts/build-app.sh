@@ -25,6 +25,7 @@ cat > "$app/Contents/Info.plist" <<PLIST
 <key>CFBundleExecutable</key><string>CodexAccounts</string>
 <key>CFBundleIdentifier</key><string>local.codex.accounts</string>
 <key>CFBundleName</key><string>Codex Accounts</string>
+<key>CFBundleIconFile</key><string>AppIcon</string>
 <key>CFBundlePackageType</key><string>APPL</string>
 <key>CFBundleVersion</key><string>16</string>
 <key>CFBundleShortVersionString</key><string>$version</string>
@@ -34,6 +35,7 @@ cat > "$app/Contents/Info.plist" <<PLIST
 </dict></plist>
 PLIST
 cp ../LICENSE ../THIRD_PARTY_NOTICES.md "$app/Contents/Resources/"
+cp Assets/AppIcon.icns "$app/Contents/Resources/"
 codesign --force --sign - "$app"
 codesign --verify --strict "$app"
 xcrun lipo "$app/Contents/MacOS/CodexAccounts" -verify_arch "$architecture"
