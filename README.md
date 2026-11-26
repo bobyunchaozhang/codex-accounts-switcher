@@ -65,20 +65,20 @@
 
 ```sh
 # Apple Silicon
-zsh 产品/scripts/package-release.sh arm64
+zsh app/scripts/package-release.sh arm64
 
 # Intel（可交叉编译；运行需对应硬件或 Rosetta）
-zsh 产品/scripts/package-release.sh x86_64
+zsh app/scripts/package-release.sh x86_64
 
 # 核心测试
-cd 产品
+cd app
 swift test --filter AccountCoreTests
 
 # 完整测试：包括独立 GUI 测试应用，需要可用的 macOS 图形会话
 zsh scripts/test-desktop-lifecycle.sh
 ```
 
-应用在 `产品/dist/<架构>/Codex Accounts.app`，ZIP 和校验文件在 `release-assets/`。GitHub Actions 分别在 Apple Silicon 与 Intel runner 构建，推送 `v*` 标签后自动发布两个下载包。
+应用在 `app/dist/<架构>/Codex Accounts.app`，ZIP 和校验文件在 `release-assets/`。GitHub Actions 分别在 Apple Silicon 与 Intel runner 构建，推送 `v*` 标签后自动发布两个下载包。
 
 ## 反馈与许可
 

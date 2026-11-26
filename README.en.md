@@ -65,20 +65,20 @@ Install Xcode or a suitable Swift/macOS SDK, then run from the repository root:
 
 ```sh
 # Apple Silicon
-zsh 产品/scripts/package-release.sh arm64
+zsh app/scripts/package-release.sh arm64
 
 # Intel (cross-compilation is supported; running needs matching hardware or Rosetta)
-zsh 产品/scripts/package-release.sh x86_64
+zsh app/scripts/package-release.sh x86_64
 
 # Core tests
-cd 产品
+cd app
 swift test --filter AccountCoreTests
 
 # Full tests, including an isolated GUI app; requires a macOS graphical session
 zsh scripts/test-desktop-lifecycle.sh
 ```
 
-Apps are written to `产品/dist/<architecture>/Codex Accounts.app`. ZIPs and checksums are written to `release-assets/`. GitHub Actions builds on separate Apple Silicon and Intel runners and publishes both packages when a `v*` tag is pushed.
+Apps are written to `app/dist/<architecture>/Codex Accounts.app`. ZIPs and checksums are written to `release-assets/`. GitHub Actions builds on separate Apple Silicon and Intel runners and publishes both packages when a `v*` tag is pushed.
 
 ## Feedback and license
 

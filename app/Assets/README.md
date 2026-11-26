@@ -17,8 +17,8 @@
 已提交生成好的 PNG 和 ICNS，普通 Swift 构建无需 Node.js。只有修改图标时才需要在 macOS 上安装 Node.js/npm，然后从仓库根目录运行：
 
 ```sh
-npm ci --prefix 产品/Assets
-npm --prefix 产品/Assets run generate
+npm ci --prefix app/Assets
+npm --prefix app/Assets run generate
 ```
 
 渲染器固定为 `@resvg/resvg-js` 2.6.2，使用系统 `iconutil` 生成 ICNS。生成过程读取本地 `Like.svg`，不会重新下载上游图标。
