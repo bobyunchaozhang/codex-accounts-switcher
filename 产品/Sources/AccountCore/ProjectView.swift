@@ -183,6 +183,9 @@ public enum ProjectView {
         guard FileManager.default.fileExists(atPath: stateURL.path) else { return }
         let before = try PrivateFiles.read(stateURL)
         guard let after = try proposedState(before, source: source, target: target, codexHome: stateURL.deletingLastPathComponent()) else { return }
+        try saveProposedState(after, expected: before, stateURL: stateURL, backupFolder: backupFolder)
+    }
+    static func saveProposedState(_ after: Data, expected before: Data, stateURL: URL, backupFolder: URL) throws {
         try PrivateFiles.directory(backupFolder)
         let backup = backupFolder.appendingPathComponent("project-view-\(UUID().uuidString).json")
         try PrivateFiles.write(before, to: backup)

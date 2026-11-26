@@ -50,7 +50,8 @@ final class DesktopLifecycleTests: XCTestCase {
         }
         let a=try credential("A"),b=try credential("B"),active=root.appendingPathComponent("fixture-auth.json")
         try PrivateFiles.write(a.data,to:active)
-        let state=root.appendingPathComponent("fixture-global-state.json"), checkpoint=root.appendingPathComponent("fixture-checkpoint.json")
+        let stateStore = DesktopStateStore(home: root)
+        let state=stateStore.jsonURL, checkpoint=root.appendingPathComponent("fixture-checkpoint.json")
         let initial:[String:Any] = [DesktopState.ownerKey:ProjectView.rendererKey(a)!,
             "local-projects":["p1":["name":"Shared","rootPaths":[root.path]]],
             "thread-project-assignments":["chat":"p1"],"projectless-thread-ids":["loose"],
@@ -78,7 +79,7 @@ final class DesktopLifecycleTests: XCTestCase {
                     },credentialsChanged:{ try SharedContinuity.activated($0,checkpoint:checkpoint,state:PrivateFiles.read(state)) },verifyDesktop:{ written in
                         let expected=SHA256.hash(data:written.data).map { String(format:"%02x",$0) }.joined()
                         return (try? String(contentsOf:root.appendingPathComponent("loaded-auth-digest.txt"),encoding:.utf8)) == expected
-                            && desktop.verifyDesktop(written,stateURL:state,authURL:active)
+                            && desktop.verifyDesktop(written,state:stateStore,authURL:active)
                     },beforeCommit:{ try desktop.requireStopped() })
                     let outcome=SwitchEngine.run(target:target,transaction:tx,operations:op)
                     XCTAssertTrue(outcome.targetWritten);XCTAssertTrue(outcome.desktopVerified);XCTAssertNil(outcome.message)

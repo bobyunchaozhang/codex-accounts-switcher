@@ -167,7 +167,10 @@ struct AccountRow: Identifiable {
     }
     private func updateLocalIdentity(_ credential: Credential?) {
         let alive = NSRunningApplication.runningApplications(withBundleIdentifier: "com.openai.codex").contains { !$0.isTerminated }
-        let matches = credential.map { DesktopIdentity.matches($0, auth: try? PrivateFiles.read(activeURL), state: try? PrivateFiles.read(activeURL.deletingLastPathComponent().appendingPathComponent(".codex-global-state.json"))) } ?? false
+        let state = DesktopStateStore(home: activeURL.deletingLastPathComponent())
+        let matches = alive && (credential.map {
+            DesktopIdentity.matches($0, auth: try? PrivateFiles.read(activeURL), state: try? state.read().data)
+        } ?? false)
         activeKey = alive && matches ? credential?.identity.key : nil
     }
     func importCurrent() {
@@ -227,9 +230,9 @@ struct AccountRow: Identifiable {
                 try Self.checkFileMode(active.deletingLastPathComponent())
                 let credential = try store.credential(profile)
                 let checkpoint = store.root.appendingPathComponent("shared-view-checkpoint.json")
-                let stateURL = active.deletingLastPathComponent().appendingPathComponent(".codex-global-state.json")
+                let state = DesktopStateStore(home: active.deletingLastPathComponent())
                 let trace = SwitchDiagnostics(url: store.root.appendingPathComponent("switch-diagnostics.json"), desktopVersion: DesktopState.diskVersion(desktop.location.app), toolVersion: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "development")
-                var preparedState: Data?
+                var preparedState: DesktopStateStore.Snapshot?
                 let op = SwitchOperations(
                     // No supported live desktop task-status endpoint is available in this build.
                     // Unknown follows the user's explicit normal-quit / bounded force-quit policy.
@@ -267,28 +270,30 @@ struct AccountRow: Identifiable {
                     },
                     reopen: { try desktop.reopen() },
                     prepareProjectView: { source, target in
-                        trace.context("after-exit", app: desktop.location.app, state: try? PrivateFiles.read(stateURL))
-                        try SharedContinuity.validate(source, checkpoint: checkpoint, state: PrivateFiles.read(stateURL))
                         try desktop.requireStopped()
-                        try ProjectView.syncTarget(
-                            stateURL: active.deletingLastPathComponent().appendingPathComponent(".codex-global-state.json"),
-                            source: source, target: target, backupFolder: store.root.appendingPathComponent("project-view-backups"))
-                        preparedState = try PrivateFiles.read(stateURL)
+                        let before = try state.read()
+                        trace.context("after-exit", app: desktop.location.app, state: before.data)
+                        if let proposed = try state.proposedSwitch(before, source: source, target: target, checkpoint: checkpoint) {
+                            try state.saveJSONSwitch(proposed, from: before, backupFolder: store.root.appendingPathComponent("project-view-backups"))
+                            preparedState = try state.read()
+                        } else {
+                            preparedState = before
+                        }
                     },
                     preflightView: { current in
-                        trace.context("preflight", app: desktop.location.app, state: try? PrivateFiles.read(stateURL))
-                        try SharedContinuity.validate(current, checkpoint: checkpoint, state: PrivateFiles.read(stateURL))
-                        _ = try ProjectView.proposedState(PrivateFiles.read(stateURL), source: current, target: credential, codexHome: active.deletingLastPathComponent())
+                        let before = try state.read()
+                        trace.context("preflight", app: desktop.location.app, state: before.data)
+                        _ = try state.proposedSwitch(before, source: current, target: credential, checkpoint: checkpoint)
                     },
-                    credentialsChanged: { try SharedContinuity.activated($0, checkpoint: checkpoint, state: PrivateFiles.read(stateURL)) },
+                    credentialsChanged: { try SharedContinuity.activated($0, checkpoint: checkpoint, state: state.read().data) },
                     verifyDesktop: {
-                        let verified = desktop.verifyDesktop($0, stateURL: stateURL, authURL: active)
-                        trace.context("after-reopen", app: desktop.location.app, state: try? PrivateFiles.read(stateURL))
+                        let verified = desktop.verifyDesktop($0, state: state, authURL: active)
+                        trace.context("after-reopen", app: desktop.location.app, state: try? state.read().data)
                         return verified
                     },
                     beforeCommit: {
                         try desktop.requireStopped()
-                        if let preparedState, try PrivateFiles.read(stateURL) != preparedState {
+                        if let preparedState, try state.read() != preparedState {
                             throw AccountError.message("切换前桌面存储再次发生变化，尚未修改登录资料，请重试。")
                         }
                     })

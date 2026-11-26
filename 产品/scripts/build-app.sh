@@ -6,7 +6,7 @@ case "$architecture" in
     arm64|x86_64) ;;
     *) print -u2 "Usage: zsh scripts/build-app.sh [arm64|x86_64]"; exit 2 ;;
 esac
-version=0.1.16
+version=0.1.17
 scratch="$PWD/.build-$architecture"
 MACOSX_DEPLOYMENT_TARGET=14.0 swift build -c release --arch "$architecture" --scratch-path "$scratch"
 bin_dir=$(swift build -c release --arch "$architecture" --scratch-path "$scratch" --show-bin-path)
@@ -27,7 +27,7 @@ cat > "$app/Contents/Info.plist" <<PLIST
 <key>CFBundleName</key><string>Codex Accounts</string>
 <key>CFBundleIconFile</key><string>AppIcon</string>
 <key>CFBundlePackageType</key><string>APPL</string>
-<key>CFBundleVersion</key><string>17</string>
+<key>CFBundleVersion</key><string>18</string>
 <key>CFBundleShortVersionString</key><string>$version</string>
 <key>LSUIElement</key><true/>
 <key>LSMinimumSystemVersion</key><string>14.0</string>

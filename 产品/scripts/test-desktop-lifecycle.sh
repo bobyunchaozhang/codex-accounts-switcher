@@ -15,7 +15,7 @@ if let data = try? Data(contentsOf: fixtureAuth) {
     try? digest.write(to:fixtureRoot.appendingPathComponent("loaded-auth-digest.txt"),atomically:true,encoding:.utf8)
     // Fixture-only renderer confirmation, using the inspected owner-key algorithm.
     // It never discovers or reads the real CODEX_HOME.
-    let stateURL = fixtureRoot.appendingPathComponent("fixture-global-state.json")
+    let stateURL = fixtureRoot.appendingPathComponent(".codex-global-state.json")
     if let stateData = try? Data(contentsOf:stateURL),
        var state = try? JSONSerialization.jsonObject(with:stateData) as? [String:Any],
        let auth = try? JSONSerialization.jsonObject(with:data) as? [String:Any],

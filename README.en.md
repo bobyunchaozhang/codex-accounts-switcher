@@ -8,12 +8,12 @@ A compact native macOS menu bar app for manually switching Codex accounts, check
 
 ## Download
 
-Current version: **0.1.16 (build 17)**. Requires **macOS 14 or later** and the Codex desktop app.
+Current version: **0.1.17 (build 18)**. Requires **macOS 14 or later** and the Codex desktop app.
 
 | Mac | Download |
 | --- | --- |
-| Apple Silicon (M1, M2, M3, M4 and other M-series chips) | [Download arm64](https://github.com/bobyunchaozhang/codex-accounts-switcher/releases/latest/download/Codex-Accounts-0.1.16-arm64.zip) |
-| Intel | [Download x86_64](https://github.com/bobyunchaozhang/codex-accounts-switcher/releases/latest/download/Codex-Accounts-0.1.16-x86_64.zip) |
+| Apple Silicon (M1, M2, M3, M4 and other M-series chips) | [Download arm64](https://github.com/bobyunchaozhang/codex-accounts-switcher/releases/latest/download/Codex-Accounts-0.1.17-arm64.zip) |
+| Intel | [Download x86_64](https://github.com/bobyunchaozhang/codex-accounts-switcher/releases/latest/download/Codex-Accounts-0.1.17-x86_64.zip) |
 
 See [Releases](https://github.com/bobyunchaozhang/codex-accounts-switcher/releases) for notes and SHA-256 checksums. Check your chip under Apple menu → About This Mac.
 
@@ -38,17 +38,18 @@ Settings also provides re-login and removal. Removal deletes only the tool's sav
 
 ## Tested Codex versions
 
-**Latest Codex desktop version experimentally inspected for this release: 26.1106.51428 (build 26605, November 12, 2026).**
+**Latest verified Codex desktop version: 26.1120.50957 (build 30866, November 26, 2026).**
 
 | Scope | Evidence |
 | --- | --- |
+| Codex 26.1120.50957 | Manual account switching passed on Apple Silicon. A read-only check confirmed the SQLite desktop identity matched the active credential. |
 | Codex 26.1106.51428 | Inspected bundled migration code and performed a read-only dry run against real local state; supports its public project/chat catalogs and new identity field |
-| Switcher 0.1.16 | 84 core tests and 2 isolated application lifecycle tests with fixture credentials; a real online Codex account roundtrip and continuation on this release still await acceptance testing |
+| Switcher 0.1.17 | 86 core tests, including SQLite migration regressions, and 2 isolated desktop lifecycle tests passed |
 | Codex 26.1103.41825 | Earlier limited Apple Silicon tests covered project visibility, continuing existing chats across accounts, and project creation/renaming/deletion. Later versions exposed exit and storage compatibility issues; those tests are not a permanent compatibility guarantee |
 | Apple Silicon | Build, execution and local checks on an M4 Pro development Mac |
 | Intel | Native x86_64 download; release CI builds, tests and checks mock UI initialization, layout and resources on an Intel runner. Intel hosted VMs lack a usable Metal device, so GPU rendering is not accepted there. Real Codex switching has not been accepted on a physical Intel Mac |
 
-Adapters recognize legacy account snapshots and the newer shared catalogs. Unknown or conflicting formats stop before credential writes. Codex internal formats and protocols can change. “Latest inspected” describes our evidence, not the latest official Codex release.
+The switcher supports legacy JSON snapshots and shared catalogs. After Codex migrates to SQLite, the switcher reads desktop identity and shared catalogs from the database in read-only mode. An unknown or conflicting format stops the switch before credential writes.
 
 ## Data and operating limits
 

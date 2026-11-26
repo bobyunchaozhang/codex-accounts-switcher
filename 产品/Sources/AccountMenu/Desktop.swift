@@ -89,13 +89,13 @@ final class Desktop: @unchecked Sendable {
         }
         throw blocked(scope.blockers(try processes()))
     }
-    func verifyDesktop(_ credential: Credential, stateURL: URL, authURL: URL) -> Bool {
+    func verifyDesktop(_ credential: Credential, state: DesktopStateStore, authURL: URL) -> Bool {
         let deadline = Date().addingTimeInterval(12)
         var consecutive = 0
         while Date() < deadline {
             let registered = Set(NSRunningApplication.runningApplications(withBundleIdentifier: location.bundleIdentifier).map(\.processIdentifier))
             let running = (try? processes().contains { registered.contains($0.pid) && $0.executable.hasPrefix(location.app.path + "/Contents/MacOS/") }) == true
-            let valid = running && DesktopIdentity.matches(credential, auth: try? PrivateFiles.read(authURL), state: try? PrivateFiles.read(stateURL))
+            let valid = running && DesktopIdentity.matches(credential, auth: try? PrivateFiles.read(authURL), state: try? state.read().data)
             consecutive = valid ? consecutive + 1 : 0
             if consecutive >= 2 { return true }
             Thread.sleep(forTimeInterval: 0.25)

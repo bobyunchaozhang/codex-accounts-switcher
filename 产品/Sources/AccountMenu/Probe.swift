@@ -8,18 +8,18 @@ enum Probe {
     static func sharedStateReadOnly() -> Int32 {
         do {
             let home = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".codex")
-            let stateURL = home.appendingPathComponent(".codex-global-state.json"), authURL = home.appendingPathComponent("auth.json")
+            let store = DesktopStateStore(home: home), authURL = home.appendingPathComponent("auth.json")
             let warehouse = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Application Support/CodexAccounts")
-            let before = try PrivateFiles.read(stateURL), auth = try PrivateFiles.read(authURL), source = try Credential(auth)
-            let state = try DesktopState(before), checkpoint = warehouse.appendingPathComponent("shared-view-checkpoint.json")
+            let before = try store.read(), auth = try PrivateFiles.read(authURL), source = try Credential(auth)
+            let state = try DesktopState(before.data), checkpoint = warehouse.appendingPathComponent("shared-view-checkpoint.json")
             let cpBefore = try? PrivateFiles.read(checkpoint)
-            try SharedContinuity.validate(source, checkpoint: checkpoint, state: before)
-            let matches = DesktopIdentity.matches(source, auth: auth, state: before)
+            try SharedContinuity.validate(source, checkpoint: checkpoint, state: before.data)
+            let matches = DesktopIdentity.matches(source, auth: auth, state: before.data)
             let profiles = try JSONDecoder().decode([Profile].self, from: PrivateFiles.read(warehouse.appendingPathComponent("accounts.json")))
             var targets = 0, onlyAllowedChanges = true, changedHints = 0
             for profile in profiles where !profile.identity.matches(source.identity) {
                 let target = try Credential(PrivateFiles.read(warehouse.appendingPathComponent("profiles/\(profile.id).json")))
-                let after = try ProjectView.proposedState(before, source: source, target: target, codexHome: home) ?? before
+                let after = try store.proposedSwitch(before, source: source, target: target, checkpoint: checkpoint) ?? before.data
                 targets += 1
                 if state.format == .sharedGlobals {
                     let next = try DesktopState(after).root
@@ -30,8 +30,8 @@ enum Probe {
                     }
                 }
             }
-            let unchanged = try PrivateFiles.read(stateURL) == before && PrivateFiles.read(authURL) == auth && (try? PrivateFiles.read(checkpoint)) == cpBefore
-            print("schema=\(state.format.rawValue) identity_matches=\(matches) preflight=passed targets_checked=\(targets)")
+            let unchanged = try store.read() == before && PrivateFiles.read(authURL) == auth && (try? PrivateFiles.read(checkpoint)) == cpBefore
+            print("storage=\(before.storage.rawValue) schema=\(state.format.rawValue) identity_matches=\(matches) preflight=passed targets_checked=\(targets)")
             print("only_allowed_hint_changes=\(onlyAllowedChanges) hint_fields_to_update=\(changedHints) real_files_unchanged=\(unchanged)")
             print("network_requests=0 auth_writes=0 state_writes=0 checkpoint_writes=0 lifecycle_operations=0")
             return matches && onlyAllowedChanges && unchanged ? 0 : 1
@@ -40,10 +40,12 @@ enum Probe {
     static func projectSyncReadOnly() -> Int32 {
         do {
             let home = FileManager.default.homeDirectoryForCurrentUser
-            let stateURL = home.appendingPathComponent(".codex/.codex-global-state.json")
+            let store = DesktopStateStore(home: home.appendingPathComponent(".codex"))
+            let stateURL = store.jsonURL
             let authURL = home.appendingPathComponent(".codex/auth.json")
-            let before = try PrivateFiles.read(stateURL), authBefore = try PrivateFiles.read(authURL)
-            if try DesktopState(before).format == .sharedGlobals { return sharedStateReadOnly() }
+            let snapshot = try store.read()
+            if try DesktopState(snapshot.data).format == .sharedGlobals { return sharedStateReadOnly() }
+            let before = snapshot.data, authBefore = try PrivateFiles.read(authURL)
             let source = try Credential(authBefore)
             let warehouse = home.appendingPathComponent("Library/Application Support/CodexAccounts")
             let profiles = try JSONDecoder().decode([Profile].self, from: PrivateFiles.read(warehouse.appendingPathComponent("accounts.json")))
@@ -86,10 +88,12 @@ enum Probe {
     static func projectViewReadOnly() -> Int32 {
         do {
             let home = FileManager.default.homeDirectoryForCurrentUser
-            let stateURL = home.appendingPathComponent(".codex/.codex-global-state.json")
+            let store = DesktopStateStore(home: home.appendingPathComponent(".codex"))
+            let stateURL = store.jsonURL
             let authURL = home.appendingPathComponent(".codex/auth.json")
-            let before = try PrivateFiles.read(stateURL), authBefore = try PrivateFiles.read(authURL)
-            if try DesktopState(before).format == .sharedGlobals { return sharedStateReadOnly() }
+            let snapshot = try store.read()
+            if try DesktopState(snapshot.data).format == .sharedGlobals { return sharedStateReadOnly() }
+            let before = snapshot.data, authBefore = try PrivateFiles.read(authURL)
             let target = try Credential(authBefore)
             let root = try JSONSerialization.jsonObject(with: before) as! [String: Any]
             let state = root[ProjectView.stateKey] as! [String: Any]
